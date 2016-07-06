@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Flappy Heptagon</title>
+    <style>
+    * {
+        padding: 0;
+        margin: 0;
+    }
+    
+    canvas {
+        background: #eee;
+        display: block;
+        margin: 0 auto;
+    }
+    </style>
+</head>
+
+<body>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <script>
+    var canvas = document.getElementById("gameCanvas");
+    var context = canvas.getContext("2d");
+
+    const gravity = 0.1;
+    const flapVelocity = -5;
+    var velocity = 0;
+    var heptagonY = 200;
+    var heptagonRotation = 0;
+    const heptagonRotationChange = 4;
+    var heptagonRotationDirection = 1;
+    var obstacles = [];
+
+    /*    	context.beginPath();
+        	context.rect(50, 50, 25, 25);
+        	context.fillStyle="#FF0000";
+            context.fill();
+        	context.closePath();*/
+
+    function drawHeptagon() {
+
+
+        context.save();
+        if (velocity < 0) {
+        	context.translate(150, heptagonY);
+        	if (heptagonRotation < -40) {
+        		heptagonRotationDirection = 1;
+        	} else if (heptagonRotation > 40) {
+        		heptagonRotationDirection = -1;
+        	}
+        	heptagonRotation += heptagonRotationChange * heptagonRotationDirection;
+	        context.rotate(heptagonRotation * Math.PI / 180); 
+	        context.translate(-150, heptagonY * -1);
+        }
+
+
+        var heptagonSVGString = "M 150, " + (heptagonY - 20) + " L 134, " + (heptagonY -12) + " L 131, " + (heptagonY + 4) + " L 141, " + (heptagonY + 18) + " L 159, " + (heptagonY + 18) + " L 169, " + (heptagonY + 4) + " L 166, " + (heptagonY - 12) + " L 150, " + (heptagonY - 20);
+
+        //var heptagonSVGString = "M 0, " + (heptagonY - 20) + " L -16, " + (heptagonY - 12) + " L -19, " + (heptagonY + 4) + " L -9, " + (heptagonY + 18) + " L 9, " + (heptagonY + 18) + " L 19, " + (heptagonY + 4) + " L 16, " + (heptagonY - 12) + " L 0, " + (heptagonY - 20);
+        
+        //var heptagonSVGString = "M 300, " + (heptagonY - 20) + " L 284, " + (heptagonY - 12) + " L 281, " + (heptagonY + 4) + " L 291, " + (heptagonY + 18) + " L 309, " + (heptagonY + 18) + " L 319, " + (heptagonY + 4) + " L 316, " + (heptagonY - 12) + " L 300, " + (heptagonY - 20);
+
+        var path = new Path2D(heptagonSVGString);
+        context.fillStyle = "#FF0000";
+        context.fill(path);
+        context.restore();
+    }
+
+    function setGravity() {
+        heptagonY += velocity;
+        velocity += gravity;
+    }
+
+    function refresh() {
+        clear();
+        drawHeptagon();
+        setGravity();
+    }
+
+    function clear() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    window.onkeydown = function(e) {
+        velocity = flapVelocity;
+        heptagonRotation = 0;
+        heptagonRotationDirection = Math.random() > 0.5 ? 1 : -1;
+    }
+
+    setInterval(refresh, 5);
+    </script>
+</body>
+
+</html>

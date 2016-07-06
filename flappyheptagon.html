@@ -15,21 +15,29 @@
         display: block;
         margin: 0 auto;
     }
+
+    p {
+    	font-family: "Courier New";
+    	text-align: center;
+    	margin-left: 350px;
+    }
     </style>
 </head>
 
 <body>
     <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <p id="p1">Author Joachim Milner 2016</p>
     <script>
     var canvas = document.getElementById("gameCanvas");
     var context = canvas.getContext("2d");
+    var p = document.getElementById("p1");
 
     const gravity = 0.1;
     const flapVelocity = -5;
+    const heptagonRotationChange = 4;
     var velocity = 0;
     var heptagonY = 200;
     var heptagonRotation = 0;
-    const heptagonRotationChange = 4;
     var heptagonRotationDirection = 1;
     var obstacles = [];
 
@@ -39,27 +47,53 @@
             context.fill();
         	context.closePath();*/
 
+    function initTitlePane() {
+        context.fillStyle = "#99CCFF";
+        context.fillRect(150, 140, 300, 120);
+        context.fillStyle = "#000000";
+        context.strokeRect(149, 139, 302, 122);
+        context.font = "bold 30px courier new";
+        context.textAlign = "center";
+        context.fillText("Welcome to", canvas.width / 2, 170);
+        context.fillText("Flappy Heptagon", canvas.width / 2, 200);
+        context.font = "bold 16px courier new";
+        context.fillText("Press any key to start flapping", canvas.width / 2, 240);
+
+        window.onkeydown = function(e) {
+            startGame();
+        }
+    }
+
+    function startGame() {
+        window.onkeydown = function(e) {
+            velocity = flapVelocity;
+            heptagonRotation = 0;
+            heptagonRotationDirection = Math.random() > 0.5 ? 1 : -1;
+        }
+/*        setInterval(function() {
+p1.innerHTML = velocity;
+}, 250);*/
+        setInterval(refresh, 5);
+    }
+
     function drawHeptagon() {
-
-
         context.save();
         if (velocity < 0) {
-        	context.translate(150, heptagonY);
-        	if (heptagonRotation < -40) {
-        		heptagonRotationDirection = 1;
-        	} else if (heptagonRotation > 40) {
-        		heptagonRotationDirection = -1;
-        	}
-        	heptagonRotation += heptagonRotationChange * heptagonRotationDirection;
-	        context.rotate(heptagonRotation * Math.PI / 180); 
-	        context.translate(-150, heptagonY * -1);
+            context.translate(150, heptagonY);
+            if (heptagonRotation < -40) {
+                heptagonRotationDirection = 1;
+            } else if (heptagonRotation > 40) {
+                heptagonRotationDirection = -1;
+            }
+            heptagonRotation += heptagonRotationChange * heptagonRotationDirection;
+            context.rotate(heptagonRotation * Math.PI / 180);
+            context.translate(-150, heptagonY * -1);
         }
 
-
-        var heptagonSVGString = "M 150, " + (heptagonY - 20) + " L 134, " + (heptagonY -12) + " L 131, " + (heptagonY + 4) + " L 141, " + (heptagonY + 18) + " L 159, " + (heptagonY + 18) + " L 169, " + (heptagonY + 4) + " L 166, " + (heptagonY - 12) + " L 150, " + (heptagonY - 20);
+        var heptagonSVGString = "M 150, " + (heptagonY - 20) + " L 134, " + (heptagonY - 12) + " L 131, " + (heptagonY + 4) + " L 141, " + (heptagonY + 18) + " L 159, " + (heptagonY + 18) + " L 169, " + (heptagonY + 4) + " L 166, " + (heptagonY - 12) + " L 150, " + (heptagonY - 20);
 
         //var heptagonSVGString = "M 0, " + (heptagonY - 20) + " L -16, " + (heptagonY - 12) + " L -19, " + (heptagonY + 4) + " L -9, " + (heptagonY + 18) + " L 9, " + (heptagonY + 18) + " L 19, " + (heptagonY + 4) + " L 16, " + (heptagonY - 12) + " L 0, " + (heptagonY - 20);
-        
+
         //var heptagonSVGString = "M 300, " + (heptagonY - 20) + " L 284, " + (heptagonY - 12) + " L 281, " + (heptagonY + 4) + " L 291, " + (heptagonY + 18) + " L 309, " + (heptagonY + 18) + " L 319, " + (heptagonY + 4) + " L 316, " + (heptagonY - 12) + " L 300, " + (heptagonY - 20);
 
         var path = new Path2D(heptagonSVGString);
@@ -74,22 +108,16 @@
     }
 
     function refresh() {
-        clear();
+        clearCanvas();
         drawHeptagon();
         setGravity();
     }
 
-    function clear() {
+    function clearCanvas() {
         context.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    window.onkeydown = function(e) {
-        velocity = flapVelocity;
-        heptagonRotation = 0;
-        heptagonRotationDirection = Math.random() > 0.5 ? 1 : -1;
-    }
-
-    setInterval(refresh, 5);
+    initTitlePane();
     </script>
 </body>
 

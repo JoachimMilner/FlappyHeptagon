@@ -26,18 +26,17 @@
 
 <body>
     <canvas id="gameCanvas" width="600" height="400"></canvas>
-    <p id="p1">Author Joachim Milner 2016</p>
+    <p>Author Joachim Milner 2016</p>
     <script>
     var canvas = document.getElementById("gameCanvas");
     var context = canvas.getContext("2d");
-    var p = document.getElementById("p1");
 
-    const GRAVITY = 0.1;
-    const FLAP_VELOCITY = -5;
-    const HEPT_ROTATION_CHANGE = 4;
-    const OBSTACLE_DECREMENT = 1;
+    const GRAVITY = 0.2;
+    const FLAP_VELOCITY = -7;
+    const HEPT_ROTATION_CHANGE = 8;
+    const OBSTACLE_DECREMENT = 2.5;
     const OBSTACLE_WIDTH = 30;
-    const OBSTACLE_GAP_WIDTH = 175;
+    const OBSTACLE_GAP_HEIGHT = 140;
     const HEPTAGON_X = 150;
     const HEPTAGON_RADIUS = 20;
     var currentScore = 0;
@@ -73,7 +72,7 @@
             heptagonRotationDirection = Math.random() > 0.5 ? 1 : -1;
         }
         generateObstacle();
-        refreshIntervalId = setInterval(refresh, 5);
+        refreshIntervalId = setInterval(refresh, 10);
     }
 
     function drawScores() {
@@ -129,14 +128,14 @@
     }
 
     function generateObstacle() {
-        var gapStart = Math.floor(Math.random() * 190);
+        var gapStart = Math.floor(Math.random() * (canvas.height - (OBSTACLE_GAP_HEIGHT + 10)));
         if (gapStart < 10) {
             gapStart = 10;
         }
         var newObstacle = {
             x: canvas.width,
             gapTop: gapStart,
-            gapBottom: gapStart + OBSTACLE_GAP_WIDTH,
+            gapBottom: gapStart + OBSTACLE_GAP_HEIGHT,
             hasPassed: false,
         }
         obstacles.push(newObstacle);

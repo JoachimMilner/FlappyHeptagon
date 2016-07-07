@@ -56,10 +56,11 @@
         context.fillText("Flappy Heptagon", canvas.width / 2, 200);
         context.font = "bold 16px courier new";
         context.fillText("Press any key to start flapping", canvas.width / 2, 240);
-        setStartGameListener();
+        document.addEventListener("DOMContentLoaded", setStartGameListener);
     }
 
-    function startGame() {
+    function startGame(event) {
+    	event.preventDefault();
     	generateObstacle();
         setFlapListener();
         refreshIntervalId = setInterval(refresh, 10);
@@ -138,7 +139,8 @@
         }
     }
 
-    function flapEvent() {
+    function flapEvent(event) {
+    	event.preventDefault();
         velocity = FLAP_VELOCITY;
         heptagonRotation = 0;
         heptagonRotationDirection = Math.random() > 0.5 ? 1 : -1;

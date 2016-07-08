@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=0.6, user-scalable=no">
+    <meta charset="utf-8" name="viewport" content="initial-scale=0.6, maximum-scale=0.61, minimum-scale=0.6, width=device-width, height=device-height, user-scalable=no">
     <title>Flappy Heptagon</title>
     <style>
     * {
@@ -38,12 +38,15 @@
     const HEPTAGON_RADIUS = 20;
     var canvas = document.getElementById("gameCanvas");
     var context = canvas.getContext("2d");
-    var currentScore = 0, highscore = 0;
+    var currentScore = 0,
+        highscore = 0;
     var velocity = 0;
     var heptagonY = 200;
-    var heptagonRotation = 0, heptagonRotationDirection = 1;
+    var heptagonRotation = 0,
+        heptagonRotationDirection = 1;
     var refreshIntervalId;
     var obstacles = [];
+    var delay = 0;
 
     function initTitlePane() {
         context.fillStyle = "#99CCFF";
@@ -56,12 +59,13 @@
         context.fillText("Flappy Heptagon", canvas.width / 2, 200);
         context.font = "bold 16px courier new";
         context.fillText("Press any key to start flapping", canvas.width / 2, 240);
-        document.addEventListener("DOMContentLoaded", setStartGameListener);
+        addEventListener("DOMContentLoaded", setStartGameListener);
     }
 
     function startGame(event) {
-    	event.preventDefault();
-    	generateObstacle();
+        event.preventDefault();
+        delay = Date.now();
+        generateObstacle();
         setFlapListener();
         refreshIntervalId = setInterval(refresh, 10);
     }
@@ -140,10 +144,31 @@
     }
 
     function flapEvent(event) {
-    	event.preventDefault();
+        event.preventDefault();
+        event.stopPropagation();
+        event.cancelBubble = true;
+        event.retunValue = false;
+        delay = Date.now();
+        var event;
+        if (document.createEvent) {
+            event = document.createEvent("HTMLEvents");
+            event.initEvent("touchcancel", true, true);
+        } else {
+            event = document.createEventObject();
+            event.eventType = "touchcancel";
+        }
+
+        event.eventName = "touchcancel";
+
+        if (document.createEvent) {
+            canvas.dispatchEvent(event);
+        } else {
+            canvas.fireEvent("on" + event.eventType, event);
+        }
         velocity = FLAP_VELOCITY;
         heptagonRotation = 0;
         heptagonRotationDirection = Math.random() > 0.5 ? 1 : -1;
+        return false;
     }
 
     function setGravity() {
@@ -186,6 +211,14 @@
     }
 
     function refresh() {
+        if (velocity == FLAP_VELOCITY) {
+            delay = Date.now() - delay;
+            console.log("delay: " + delay);
+        }
+        if (velocity == 0) {
+            delay = Date.now() - delay;
+            console.log("initial delay: " + delay);
+        }
         clearCanvas();
         drawHeptagon();
         drawAndCheckObstacles();
@@ -202,6 +235,8 @@
         removeEventListener("touchstart", flapEvent);
         addEventListener("keydown", startGame);
         addEventListener("touchstart", startGame);
+        document.addEventListener("touchmove", preventDefaultTouchHandler);
+        document.addEventListener("touchend", preventDefaultTouchHandler);
     }
 
     function setFlapListener() {
@@ -209,6 +244,12 @@
         removeEventListener("touchstart", startGame);
         addEventListener("keydown", flapEvent);
         addEventListener("touchstart", flapEvent);
+    }
+
+    function preventDefaultTouchHandler(event) {
+        console.log(event.type);
+        event.preventDefault();
+        return false;
     }
 
     initTitlePane();
